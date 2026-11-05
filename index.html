@@ -501,6 +501,32 @@
           </div>
         </div>
 
+        <div class="panel" id="cloudSyncPanel">
+          <h3>Cloud Sync / Supabase</h3>
+          <p class="subtle">Optional cloud synchronization. Local IndexedDB remains the primary offline copy. Configure Supabase first; never put a service-role key here.</p>
+          <div class="form-grid">
+            <div class="field"><label for="supabaseUrl">Supabase Project URL</label><input id="supabaseUrl" type="url" placeholder="https://YOUR-PROJECT.supabase.co" autocomplete="off"></div>
+            <div class="field"><label for="supabaseAnonKey">Supabase Publishable / anon key</label><input id="supabaseAnonKey" type="password" placeholder="sb_publishable_... or anon JWT" autocomplete="off"></div>
+            <div class="field"><label for="cloudEmail">Account email</label><input id="cloudEmail" type="email" autocomplete="username"></div>
+            <div class="field"><label for="cloudPassword">Password</label><input id="cloudPassword" type="password" autocomplete="current-password"></div>
+          </div>
+          <div class="form-actions" style="flex-wrap:wrap">
+            <button class="btn btn-primary" id="cloudSaveConfigBtn" type="button">Save Cloud Settings</button>
+            <button class="btn btn-ghost" id="cloudSignInBtn" type="button">Sign in / Create account</button>
+            <button class="btn btn-ghost" id="cloudSignOutBtn" type="button">Sign out</button>
+          </div>
+          <p id="cloudAuthStatus" class="subtle" role="status">Cloud is not configured.</p>
+          <hr>
+          <p><strong>First connection — choose one direction only:</strong></p>
+          <div class="form-actions" style="flex-wrap:wrap">
+            <button class="btn btn-primary" id="cloudFirstPushBtn" type="button">Upload this computer's data to Cloud</button>
+            <button class="btn btn-ghost" id="cloudFirstPullBtn" type="button">Download Cloud data to this computer</button>
+          </div>
+          <p class="subtle">After the first migration, use Two-way Sync. If both sides changed the same dataset, sync stops and asks for manual review instead of overwriting either side.</p>
+          <button class="btn btn-primary" id="cloudTwoWaySyncBtn" type="button">Two-way Sync</button>
+          <p id="cloudSyncStatus" class="subtle" role="status">Not synchronized yet.</p>
+        </div>
+
         <div class="panel">
           <h3 data-i18n="reset_demo_heading">Reset Demo Data</h3>
           <p class="subtle" data-i18n="reset_demo_sub">Wipes everything and reloads the original 11 sample/demo records. Cannot be undone.</p>
@@ -569,5 +595,7 @@
   <script src="data.js"></script>
   <script src="i18n.js"></script>
   <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="cloud-sync.js"></script>
 </body>
 </html>

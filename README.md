@@ -180,3 +180,7 @@ Important: this remains an offline LocalStorage prototype. Data stays in the cur
 - Kept original LocalStorage values during migration as a safety copy.
 - Added LocalStorage fallback when IndexedDB is unavailable.
 - Kept JSON Backup/Restore and existing UI/features.
+
+
+## SISD-IN V3 Cloud Sync
+See `README-V3-KM.md` (Khmer) and `README-V3.md` (English). Run `supabase-schema.sql` in Supabase SQL Editor before configuring Cloud Sync.

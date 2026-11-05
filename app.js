@@ -898,6 +898,7 @@ function backupData() {
       documents,
       companyInfos,
       ddgDocuments,
+      savedSubjects: storageGet("sisd_document_subjects", []),
     },
   };
   downloadBlob(JSON.stringify(payload, null, 2), "application/json", `SISD-IN-full-backup-${fileStamp()}.json`);
@@ -913,7 +914,7 @@ function handleRestoreFile(file) {
       const parsed = JSON.parse(String(reader.result));
       // Backward compatible with older backups that were just an array of documents.
       if (Array.isArray(parsed)) {
-        restoreFileContent = { legacy: true, documents: parsed, companyInfos: [], ddgDocuments: [] };
+        restoreFileContent = { legacy: true, documents: parsed, companyInfos: [], ddgDocuments: [], savedSubjects: [] };
       } else if (parsed && parsed.app === "SISD-IN" && parsed.datasets && Array.isArray(parsed.datasets.documents)) {
         const ds = parsed.datasets;
         if ((ds.companyInfos !== undefined && !Array.isArray(ds.companyInfos)) ||
@@ -923,6 +924,7 @@ function handleRestoreFile(file) {
           documents: ds.documents,
           companyInfos: ds.companyInfos || [],
           ddgDocuments: ds.ddgDocuments || [],
+          savedSubjects: Array.isArray(ds.savedSubjects) ? ds.savedSubjects : [],
         };
       } else {
         throw new Error("Unsupported backup format");
@@ -949,6 +951,7 @@ function restoreData() {
   if (!restoreFileContent.legacy) {
     companyInfos = restoreFileContent.companyInfos;
     ddgDocuments = restoreFileContent.ddgDocuments;
+    storageSet("sisd_document_subjects", restoreFileContent.savedSubjects || []);
   }
   saveDocuments();
   saveCompanyInfos();
