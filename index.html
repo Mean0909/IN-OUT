@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SISD-IN Document Management System</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">
+      <div class="brand-mark"><img src="img/logo_serc.png" alt="SERC"></div>
+      <div class="brand-text">
+        <h1 data-i18n="brand_title">SISD-IN Document Management System</h1>
+        <p data-i18n="brand_subtitle">Incoming Document Registration &amp; Records Management</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="lang-toggle" id="langToggle" role="group" aria-label="Language">
+        <button type="button" class="lang-btn active" data-lang-btn="en">EN</button>
+        <button type="button" class="lang-btn" data-lang-btn="km">ខ្មែរ</button>
+      </div>
+      <button type="button" class="settings-icon-btn" id="topSettingsBtn" aria-label="Settings" title="Settings">⚙</button>
+      <span class="storage-pill" data-i18n-title="storage_pill_title" title="Data is stored locally in this browser.">
+        <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v3H9V7zm3 7a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        <span data-i18n="storage_pill">Data is stored locally in this browser</span>
+      </span>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- ============ SIDEBAR ============ -->
+    <nav class="sidebar" id="sidebar">
+      <ul>
+        <li><a href="#" class="nav-link active" data-view="dashboard"><span class="ic">▦</span> <span data-i18n="nav_dashboard">Dashboard</span></a></li>
+        <li><a href="#" class="nav-link" data-view="documents"><span class="ic">☰</span> <span data-i18n="nav_documents">Document List</span></a></li>
+        <li><a href="#" class="nav-link" data-view="add"><span class="ic">⇥</span> <span data-i18n="nav_add">Document in</span></a></li>
+        <li><a href="#" class="nav-link" data-view="ddg"><span class="ic">⇥</span> <span data-i18n="nav_ddg">Document to DDG</span></a></li>
+        <li><a href="#" class="nav-link" data-view="add-info"><span class="ic">＋</span> <span data-i18n="nav_add_info">Add Information</span></a></li>
+        <li><a href="#" class="nav-link" data-view="reports"><span class="ic">▥</span> <span data-i18n="nav_reports">Reports</span></a></li>
+        <li><a href="#" class="nav-link" data-view="import-export"><span class="ic">⇅</span> <span data-i18n="nav_import_export">Import / Export</span></a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <span data-i18n="sidebar_footer_1">SISD-IN &middot; Offline prototype</span><br/>
+        <span data-i18n="sidebar_footer_2">No data leaves this browser.</span>
+      </div>
+    </nav>
+    <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="content">
+
+      <!-- ---------- DASHBOARD VIEW ---------- -->
+      <section class="view" id="view-dashboard">
+        <div class="view-head">
+          <h2 data-i18n="dashboard_heading">Dashboard</h2>
+          <p class="subtle" data-i18n="dashboard_sub">Overview of all incoming documents recorded in SISD-IN.</p>
+        </div>
+
+        <div class="panel dashboard-activity-panel">
+          <div class="panel-head"><h3>Daily Activity / ស្ថិតិការងារប្រចាំថ្ងៃ</h3><div class="field compact-field"><label for="dashboardDate">Date / កាលបរិច្ឆេទ</label><input type="date" id="dashboardDate" /></div></div>
+          <div id="dashboardBarChart" class="six-bar-chart" aria-label="Six daily activity bar charts"></div>
+        </div>
+        <div class="panel" id="dashboardDailyComparisonPanel">
+          <div class="panel-head"><h3>Daily Change Comparison / ការប្រៀបធៀបប្រចាំថ្ងៃ</h3></div>
+          <p class="subtle">Selected date compared with the previous calendar day. Percentage is N/A when the previous day is zero.</p>
+          <div class="table-wrap"><table class="data-table" id="dailyComparisonTable"><thead><tr><th>Activity / ប្រភេទការងារ</th><th>Selected day / ថ្ងៃជ្រើសរើស</th><th>Previous day / ថ្ងៃមុន</th><th>Change / ការឡើងចុះ</th><th>Change % / ភាគរយ</th></tr></thead><tbody></tbody></table></div>
+          <h3 style="margin-top:20px">Revision count by role / ចំនួនការកែតាមតួនាទី</h3>
+          <div class="table-wrap"><table class="data-table" id="revisionRoleTable"><thead><tr><th>Role / តួនាទី</th><th>Revisions on selected day / ចំនួនថ្ងៃដែលជ្រើសរើស</th><th>Total revisions / សរុប</th></tr></thead><tbody></tbody></table></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3 data-i18n="recent_heading">Recently added</h3>
+            <button class="btn btn-ghost" data-view-target="documents" data-i18n="view_all">View all →</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="recentTable">
+              <thead>
+                <tr>
+                  <th data-i18n="th_no">No.</th>
+                  <th data-i18n="th_date">Date-in</th>
+                  <th data-i18n="th_docname">Document Name</th>
+                  <th data-i18n="label_nick">Nick Name</th>
+                  <th data-i18n="th_company_short">Company</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3 data-i18n="today_updates_heading">Today's Updates</h3></div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th data-i18n="th_no">No.</th><th data-i18n="label_docname">Document</th><th data-i18n="label_update_from">Updated By</th><th data-i18n="label_date">Date</th><th data-i18n="label_time">Time</th><th data-i18n="label_timestamp">Timestamp</th></tr></thead><tbody id="todayUpdatesBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ---------- ADD / EDIT DOCUMENT VIEW ---------- -->
+      <section class="view" id="view-add" hidden>
+        <div class="view-head">
+          <h2 id="formTitle" data-i18n="form_add_title">Add Incoming Document</h2>
+          <p class="subtle" id="formSubtitle">
+            <span data-i18n="form_required_note">Fields marked</span>
+            <span class="req">*</span>
+            <span data-i18n="form_required_note_2">are required.</span>
+          </p>
+        </div>
+        <form class="panel form-panel" id="documentForm" novalidate>
+        <input type="hidden" id="f_id" />
+          <div class="form-grid">
+            <!-- No. -->
+            <div class="field">
+              <label for="f_documentNo" data-i18n="label_no">No.</label>
+              <input type="text" id="f_documentNo" readonly class="auto-field"/>
+            </div>
+
+            <!-- Date-in -->
+            <div class="field">
+              <label for="f_dateIn"><span data-i18n="label_date">Date-in</span><span class="req">*</span></label>
+              <input type="date" id="f_dateIn" required/>
+            </div>
+
+            <!-- Time-in -->
+            <div class="field">
+              <label for="f_timeIn"><span data-i18n="label_time">Time-in</span><span class="req">*</span></label>
+              <input type="time" id="f_timeIn" required />
+            </div>
+
+            <!-- Company Document No. -->
+            <div class="field">
+              <label
+                for="f_companyDocumentNo"
+                data-i18n="label_nocom">
+                No. Com
+              </label>
+
+              <input
+                type="text"
+                id="f_companyDocumentNo"
+                data-i18n-placeholder="placeholder_company_document_no" placeholder="e.g. ABC/2026/015"
+              />
+            </div>
+
+            <!-- Nick Name first, then Company Name -->
+            <div class="field">
+              <label for="f_nickName" data-i18n="label_nick">Nick Name</label>
+              <input type="text" id="f_nickName" list="companyNickList" />
+            </div>
+            <div class="field">
+              <label for="f_companyName"><span data-i18n="label_company">Company Name</span><span class="req">*</span></label>
+              <input type="text" id="f_companyName" required />
+            </div>
+
+            <!-- Organization Type -->
+            <div class="field">
+              <label for="f_orgType" data-i18n="label_org_type">Organization Type</label>
+              <input type="text" id="f_orgType" list="orgTypeList" />
+            </div>
+
+            <!-- Document Name -->
+            <div class="field field-wide">
+              <label for="f_documentName">
+                <span data-i18n="label_docname">
+                  Document Name
+                </span>
+                <span class="req">*</span>
+              </label>
+
+              <input
+                type="text"
+                id="f_documentName"
+                list="documentSubjectList"
+                autocomplete="off"
+                placeholder="ជ្រើសរើស ឬវាយបញ្ចូលកម្មវត្ថុថ្មី"
+                required
+              />
+              <datalist id="documentSubjectList">
+                <option value="ការស្នើសុំអាជ្ញាបណ្ណ"></option>
+                <option value="ការអនុញ្ញាត"></option>
+                <option value="ការទទួលស្គាល់គុណវុឌ្ឍ"></option>
+                <option value="ការផ្តល់ឯកសារពាក់ព័ន្ធ"></option>
+                <option value="ក្រុមហ៊ុនអន្តរការីមូលបត្រ"></option>
+                <option value="ភ្នាក់ងារ និងបុគ្គលក្នុងក្រុមហ៊ុនអន្តរការីមូលបត្រ"></option>
+                <option value="ភ្នាក់ងារណែនាំ"></option>
+              </datalist>
+              <div class="hint">អាចស្វែងរកក្នុងបញ្ជី ឬវាយបញ្ចូលកម្មវត្ថុថ្មីបាន។</div>
+            </div>
+
+            <input type="hidden" id="f_status" value="Received" />
+
+            <!-- Giver -->
+            <div class="field">
+              <label for="f_giver">
+                <span data-i18n="label_giver">Giver</span>
+              </label>
+
+              <input
+                type="text"
+                id="f_giver"
+                data-i18n-placeholder="placeholder_giver" placeholder="Enter giver name"
+              />
+            </div>
+
+            <!-- Received By -->
+            <div class="field">
+              <label for="f_receivedBy" data-i18n="label_receivedby">Received By</label>
+              <input type="text" id="f_receivedBy" placeholder="" />
+            </div>
+
+            <!-- Attachment -->
+            <div class="field">
+              <label
+                for="f_attachment"
+                data-i18n="label_attachment">
+                Attachment
+              </label>
+
+              <input
+                type="file"
+                id="f_attachment"
+              />
+
+              <div
+                class="hint"
+                id="f_attachmentName"
+                data-i18n="attachment_hint">
+                No file selected. (The file is stored locally so it can be viewed later.)
+              </div>
+            </div>
+
+            <!-- Remark -->
+            <div class="field field-wide">
+              <label
+                for="f_remark"
+                data-i18n="label_remark">
+                Remark
+              </label>
+
+              <textarea
+                id="f_remark"
+                rows="2">
+              </textarea>
+            </div>
+
+          </div>
+
+          <!-- Form Message -->
+          <div
+            class="form-msg"
+            id="formMsg"
+            role="status">
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="saveBtn"
+              data-i18n="btn_save">
+              Save Document
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-ghost"
+              id="clearFormBtn"
+              data-i18n="btn_clear">
+              Clear
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-ghost"
+              id="cancelEditBtn"
+              hidden
+              data-i18n="btn_cancel_edit">
+              Cancel Edit
+            </button>
+
+          </div>
+
+        </form>
+      </section>
+
+      <!-- ---------- ADD INFORMATION VIEW ---------- -->
+      <section class="view" id="view-add-info" hidden>
+        <div class="view-head">
+          <h2 data-i18n="add_info_heading">Add Information</h2>
+          <p class="subtle" data-i18n="add_info_sub">Save company information for auto-complete and auto-fill in new documents.</p>
+        </div>
+        <form class="panel form-panel" id="companyInfoForm" novalidate>
+          <div class="form-grid">
+            <div class="field"><label for="ci_nickName"><span data-i18n="label_nick">Nick Name</span><span class="req">*</span></label><input id="ci_nickName" required /></div>
+            <div class="field"><label for="ci_companyName"><span data-i18n="label_company">Company Name</span><span class="req">*</span></label><input id="ci_companyName" required /></div>
+            <div class="field"><label for="ci_orgType" data-i18n="label_org_type">Organization Type</label><input id="ci_orgType" list="orgTypeList" /></div>
+            <div class="field"><label for="ci_receivedBy" data-i18n="label_receivedby">Received By</label><input id="ci_receivedBy" /></div>
+            <div class="field"><label for="ci_giver" data-i18n="label_giver">Giver</label><input id="ci_giver" /></div>
+          </div>
+          <div class="form-msg" id="companyInfoMsg"></div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit" data-i18n="btn_save">Save</button><button class="btn btn-ghost" type="button" id="clearCompanyInfoBtn" data-i18n="btn_clear">Clear</button></div>
+        </form>
+        <div class="panel"><h3>នាំចូលបញ្ជីក្រុមហ៊ុនពី Excel</h3><p class="subtle">Save Excel as CSV UTF-8 first. Columns: Nick Name, Company Name, Organization Type, Received By, Giver.</p><div class="form-actions"><input type="file" id="companyImportFile" accept=".csv,.txt" /><button class="btn btn-primary" type="button" id="companyImportPreviewBtn">Preview Import</button></div><div id="companyImportPreviewWrap" hidden><div id="companyImportSummary" class="import-summary"></div><div class="table-wrap"><table class="data-table" id="companyImportPreviewTable"><thead><tr></tr></thead><tbody></tbody></table></div><div class="form-actions"><button class="btn btn-primary" type="button" id="confirmCompanyImportBtn">Confirm Import</button><button class="btn btn-ghost" type="button" id="cancelCompanyImportBtn">Cancel</button></div></div></div>
+        <div class="panel">
+          <div class="panel-head"><h3 data-i18n="saved_info_heading">Saved Company Information</h3><div class="search-box"><input id="companyInfoSearch" placeholder="Search..." /></div></div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th data-i18n="label_nick">Nick Name</th><th data-i18n="label_company">Company Name</th><th data-i18n="label_org_type">Organization Type</th><th data-i18n="label_receivedby">Received By</th><th data-i18n="label_giver">Giver</th><th data-i18n="th_action">Action</th></tr></thead><tbody id="companyInfoBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ---------- DOCUMENT TO DDG VIEW ---------- -->
+      <section class="view" id="view-ddg" hidden>
+        <div class="view-head"><h2 data-i18n="ddg_heading">Document to DDG</h2><p class="subtle" data-i18n="ddg_sub">Register documents sent to DDG or DG, upload supporting files, and track updates.</p></div>
+        <form class="panel form-panel" id="ddgForm" novalidate>
+          <input type="hidden" id="ddg_id" />
+          <div class="form-grid">
+            <div class="field"><label for="ddg_no">លេខរៀង (ID)<span class="req">*</span></label><input id="ddg_no" required /></div>
+            <div class="field"><label for="ddg_date">កាលបរិច្ឆេទ</label><input type="date" id="ddg_date" readonly required /></div>
+            <div class="field"><label for="ddg_time">ម៉ោង</label><input type="time" id="ddg_time" readonly required /></div>
+            <div class="field"><label for="ddg_officer">ឈ្មោះមន្ត្រី<span class="req">*</span></label><input id="ddg_officer" required /></div>
+            <div class="field"><label for="ddg_company">ឈ្មោះក្រុមហ៊ុន<span class="req">*</span></label><input id="ddg_company" required /></div>
+            <div class="field field-wide"><label for="ddg_name">កម្មវត្ថុ<span class="req">*</span></label><textarea id="ddg_name" rows="3" required></textarea></div>
+          </div>
+          <div class="form-msg" id="ddgMsg"></div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit" id="ddgSaveBtn" data-i18n="btn_save">Save</button><button class="btn btn-ghost" type="button" id="ddgClearBtn" data-i18n="btn_clear">Clear</button></div>
+        </form>
+        <div class="panel"><div class="toolbar"><div class="search-box"><span class="search-icon">⌕</span><input id="ddgSearch" data-i18n-placeholder="search_placeholder" placeholder="Search" /></div><button class="btn btn-ghost" id="ddgRefreshBtn" data-i18n="btn_search">Search</button></div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th>លេខរៀង (ID)</th><th>កាលបរិច្ឆេទ</th><th>ម៉ោង</th><th>ឈ្មោះមន្ត្រី</th><th>ឈ្មោះក្រុមហ៊ុន</th><th>កម្មវត្ថុ</th><th>ចំនួនកែ</th><th data-i18n="th_action">Action</th></tr></thead><tbody id="ddgBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ---------- RECORDS / HISTORY VIEW ---------- -->
+      <section class="view" id="view-records" hidden>
+        <div class="view-head"><h2 data-i18n="records_heading">Records / History</h2><p class="subtle" data-i18n="records_sub">Audit trail of updates and completed documents.</p></div>
+        <div class="panel"><div class="toolbar"><div class="search-box"><span class="search-icon">⌕</span><input id="historySearch" data-i18n-placeholder="search_placeholder" placeholder="Search" /></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th data-i18n="th_no">No.</th><th data-i18n="label_docname">Document</th><th data-i18n="label_company">Company</th><th data-i18n="label_update_from">Updated By</th><th data-i18n="label_date">Date</th><th data-i18n="label_time">Time</th><th data-i18n="label_status">Status</th><th data-i18n="label_timestamp">Timestamp</th></tr></thead><tbody id="historyBody"></tbody></table></div></div>
+      </section>
+
+      <!-- ---------- REPORTS VIEW ---------- -->
+      <section class="view" id="view-reports" hidden>
+        <div class="view-head"><h2 data-i18n="reports_heading">Summary Reports</h2><p class="subtle" data-i18n="reports_sub">Monthly document activity summary.</p></div>
+        <div class="panel"><div class="form-grid"><div class="field"><label for="reportMonth" data-i18n="label_month">Month</label><input type="month" id="reportMonth" /></div></div><div class="form-actions"><button class="btn btn-primary" id="reportRefreshBtn" data-i18n="btn_search">Generate</button><button class="btn btn-ghost" id="reportExcelBtn" data-i18n="btn_export_excel">Export Excel</button><button class="btn btn-ghost" id="reportWordBtn" data-i18n="btn_export_word">Export Word</button><button class="btn btn-ghost" id="reportPdfBtn" data-i18n="btn_export_pdf">Export PDF</button></div></div>
+        <div class="panel"><h3>ស្ថិតិសង្ខេបប្រចាំខែ</h3><div id="monthlyReportStats" class="stats-grid"></div></div>
+        <div class="panel"><h3>ការប្រៀបធៀបប្រចាំខែ</h3><p class="subtle">ប្រៀបធៀបខែដែលបានជ្រើសរើសជាមួយខែមុន។</p><div class="table-wrap"><table class="data-table" id="reportTable"><thead><tr><th>សូចនាករ</th><th>ខែនេះ</th><th>ខែមុន</th><th>កើនឡើង/ថយចុះ</th><th>ប្រែប្រួល (%)</th></tr></thead><tbody></tbody></table></div></div>
+      </section>
+
+      <datalist id="companyNickList"></datalist><datalist id="orgTypeList"></datalist>
+
+      <!-- ---------- DOCUMENTS LIST VIEW ---------- -->
+      <section class="view" id="view-documents" hidden>
+        <div class="view-head">
+          <h2 data-i18n="documents_heading">Documents</h2>
+          <p class="subtle" data-i18n="documents_sub">Search, filter, sort and manage every incoming document.</p>
+        </div>
+
+        <div class="panel">
+          <div class="search-row">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+              <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Search by No., Company, Doc. Name, Nick Name, Source, Giver, Remark" />
+            </div>
+            <select id="documentTypeFilter" aria-label="Filter documents by type">
+              <option value="all">គ្រប់ប្រភេទ</option>
+              <option value="incoming">ឯកសារចូល</option>
+              <option value="edited">ឯកសារកែសម្រួល</option>
+              <option value="completed">ឯកសារបញ្ចប់</option>
+            </select>
+            <button class="btn btn-ghost" id="toggleFiltersBtn" data-i18n="btn_advanced_filter">Advanced Search / Filter ▾</button>
+            <button class="btn btn-ghost" id="printBtn" data-i18n="btn_print">Print</button>
+          </div>
+
+          <div class="filters" id="filtersPanel" hidden>
+            <div class="filters-grid">
+              <div class="field">
+                <label for="filterDateFrom" data-i18n="filter_date_from">Date From</label>
+                <input type="date" id="filterDateFrom" />
+              </div>
+              <div class="field">
+                <label for="filterDateTo" data-i18n="filter_date_to">Date To</label>
+                <input type="date" id="filterDateTo" />
+              </div>
+              <div class="field">
+                <label for="filterCompany" data-i18n="label_company">Company Name</label>
+                <input type="text" id="filterCompany" />
+              </div>
+              <div class="field">
+                <label for="filterStatus" data-i18n="label_status">Status</label>
+                <select id="filterStatus"><option value="" data-i18n="filter_all">All</option></select>
+              </div>
+              <div class="field">
+                <label for="filterReceivedBy" data-i18n="label_receivedby">Received By</label>
+                <input type="text" id="filterReceivedBy" />
+              </div>
+            </div>
+            <div class="filters-actions">
+              <button class="btn btn-primary" id="applyFiltersBtn" data-i18n="btn_search">Search</button>
+              <button class="btn btn-ghost" id="resetFiltersBtn" data-i18n="btn_reset_filter">Reset Filter</button>
+            </div>
+          </div>
+
+          <div class="table-meta">
+            <span id="resultsSummary">Showing 0 records</span>
+            <label class="per-page">
+              <span data-i18n="per_page_label">Per page:</span>
+              <select id="perPageSelect">
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" id="mainTable">
+              <thead>
+                <tr>
+                  <th data-sort="documentNo" data-i18n="th_no">No.</th>
+                  <th data-sort="dateIn" data-i18n="th_date">Date-in</th>
+                  <th data-sort="timeIn" data-i18n="th_time">Time-in</th>
+                  <th data-i18n="th_nocom">No. Com</th>
+                  <th data-i18n="label_nick">Nick Name</th>
+                  <th data-sort="companyName" data-i18n="label_company">Company Name</th>
+                  <th data-sort="documentName" data-i18n="th_docname_full">Document Name</th>
+                  <th data-i18n="label_giver">Giver</th>
+                  <th class="col-action" data-i18n="th_action">Action</th>
+                </tr>
+              </thead>
+              <tbody id="mainTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </section>
+
+      <!-- ---------- IMPORT / EXPORT VIEW ---------- -->
+      <section class="view" id="view-import-export" hidden>
+        <div class="view-head">
+          <h2 data-i18n="import_export_heading">Import / Export</h2>
+          <p class="subtle" data-i18n="import_export_sub">Bring in data from an Excel/CSV export, or send data out.</p>
+        </div>
+
+        <div class="panel">
+          <h3 data-i18n="import_heading">Import Data</h3>
+          <p class="subtle" data-i18n="import_sub">Import a CSV file exported from Excel (save the workbook as CSV first). Preview and duplicate checking are shown before import. Expected columns: No., Date-in, Time-in, Doc. Name, No_Com, Nick Name, Company-Name, Source, Status, Giver, Received By, Remark.</p>
+          <input type="file" id="importFileInput" accept=".csv,.txt" />
+          <div id="importPreviewWrap" hidden>
+            <div class="import-summary" id="importSummary"></div>
+            <div class="table-wrap">
+              <table class="data-table" id="importPreviewTable">
+                <thead><tr></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" id="overwriteDuplicates" />
+              <span data-i18n="checkbox_overwrite">Overwrite existing records when a matching No. is found</span>
+            </label>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="confirmImportBtn" data-i18n="btn_import">Import</button>
+              <button class="btn btn-ghost" id="cancelImportBtn" data-i18n="btn_cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 data-i18n="export_heading">Export Data</h3>
+          <p class="subtle" data-i18n="export_sub">Exports respect any active filter on the Documents page.</p>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="exportCsvBtn" data-i18n="btn_export_csv">Export CSV</button>
+            <button class="btn btn-primary" id="exportExcelBtn" data-i18n="btn_export_excel">Export Excel (.xls)</button>
+            <button class="btn btn-ghost" id="exportPrintBtn" data-i18n="btn_print">Print</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SETTINGS / BACKUP VIEW ---------- -->
+      <section class="view" id="view-settings" hidden>
+        <div class="view-head">
+          <h2 data-i18n="settings_heading">Settings</h2>
+          <p class="subtle" data-i18n="settings_sub">Data lives only in this browser's local database. Back it up regularly.</p>
+        </div>
+
+        <div class="panel">
+          <p class="subtle" id="storageModeNote">កំពុងពិនិត្យប្រព័ន្ធផ្ទុកទិន្នន័យ...</p>
+          <h3 data-i18n="backup_heading">Backup Data</h3>
+          <p class="subtle" data-i18n="backup_sub">Download the entire database as a JSON file. Keep it somewhere safe — clearing browser data may erase the local database.</p>
+          <button class="btn btn-primary" id="backupBtn" data-i18n="backup_heading">Backup Data</button>
+        </div>
+
+        <div class="panel">
+          <h3 data-i18n="restore_heading">Restore Data</h3>
+          <p class="subtle" data-i18n="restore_sub">Restore from a previously exported JSON backup. This replaces the current database.</p>
+          <input type="file" id="restoreFileInput" accept=".json" />
+          <div class="form-actions">
+            <button class="btn btn-primary" id="restoreBtn" disabled data-i18n="restore_heading">Restore Data</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 data-i18n="reset_demo_heading">Reset Demo Data</h3>
+          <p class="subtle" data-i18n="reset_demo_sub">Wipes everything and reloads the original 11 sample/demo records. Cannot be undone.</p>
+          <button class="btn btn-danger" id="resetDemoBtn" data-i18n="btn_reset_demo">Reset to Demo Data</button>
+        </div>
+
+        <div class="panel notice-panel">
+          <p><strong data-i18n="notice_strong">Data is stored locally in this browser.</strong> <span data-i18n="notice_text">This application works fully offline after the page has loaded and never sends any data to an external server.</span></p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============ VIEW DOCUMENT MODAL ============ -->
+  <div class="modal-backdrop" id="viewModalBackdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3 data-i18n="modal_view_title">Document Information</h3>
+        <button class="modal-close" data-close="viewModalBackdrop">&times;</button>
+      </div>
+      <div class="modal-body" id="viewModalBody"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="viewEditBtn" data-i18n="btn_edit">Edit</button>
+        <button class="btn btn-ghost" data-close="viewModalBackdrop" data-i18n="btn_close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DDG UPDATE MODAL ============ -->
+  <div class="modal-backdrop" id="ddgUpdateModalBackdrop" hidden>
+    <div class="modal modal-sm" role="dialog" aria-modal="true">
+      <div class="modal-head"><h3 data-i18n="update_heading">Update Document</h3><button class="modal-close" data-close="ddgUpdateModalBackdrop">&times;</button></div>
+      <form class="modal-body" id="ddgUpdateForm">
+        <input type="hidden" id="ddgUpdateId" />
+        <p class="subtle">This records who handled the revision only. It will not change document details.</p>
+        <div class="field"><label for="ddgUpdateFrom">អ្នកកែសម្រួល / Role</label><select id="ddgUpdateFrom" required><option value="">-- ជ្រើសរើសតួនាទី --</option><option value="ប្រធាននាយកដ្ឋាន">ប្រធាននាយកដ្ឋាន</option><option value="អគ្គរង">អគ្គរង</option><option value="នាយក">នាយក</option></select></div>
+        <div class="field"><label>Document ID</label><input id="ddgUpdateDocumentId" readonly /></div>
+        <div class="field"><label>កាលបរិច្ឆេទ និងម៉ោង</label><input id="ddgUpdateTimestamp" readonly /></div>
+        <div class="modal-actions"><button class="btn btn-primary" type="submit" data-i18n="btn_update">Update</button><button class="btn btn-ghost" type="button" data-close="ddgUpdateModalBackdrop" data-i18n="btn_cancel">Cancel</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ DELETE CONFIRM MODAL ============ -->
+  <div class="modal-backdrop" id="deleteModalBackdrop" hidden>
+    <div class="modal modal-sm" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3 data-i18n="modal_delete_title">Delete Document</h3>
+        <button class="modal-close" data-close="deleteModalBackdrop">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p data-i18n="delete_confirm_text">Are you sure you want to delete this document?</p>
+        <p class="subtle" id="deleteDocLabel"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="confirmDeleteBtn" data-i18n="btn_delete">Delete</button>
+        <button class="btn btn-ghost" data-close="deleteModalBackdrop" data-i18n="btn_cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
